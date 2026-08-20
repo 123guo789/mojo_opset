@@ -1043,8 +1043,9 @@ def swa_paged_prefill_impl(
             BLOCK_D,
             page_size,
             PAGE_AGGREGATION_NUM,
-            enable_dynamic_cv_pipeline=True,
+            enable_dynamic_cv_pipeline=False,
             enable_cube_block_merge=True,
+            enable_preload=True,
         )
     else:
         _swa_paged_prefill_kernel[grid](
@@ -1092,6 +1093,8 @@ def swa_paged_prefill_impl(
             hfusion_enable_multiple_consumer_fusion=True,
             intra_cache_num=3,
             inter_cache_num=2,
+            enable_preload=True,
+            enable_dynamic_cv_pipeline=False,
         )
     return o
 
@@ -1415,7 +1418,7 @@ def swa_paged_decode_impl(
         triton.Config({"BLOCK_M": BM, "BLOCK_N": BN, "multibuffer": MF})
         for BM in [128]
         for BN in [128]
-        for MF in [False]
+        for MF in [True]
     ],
     key=["HEAD_DIM"],
 )
@@ -1700,12 +1703,14 @@ def swa_fwd_impl(
         head_dim,
         BLOCK_D,
         output_f32,
-        limit_auto_multi_buffer_buffer="no-limit",
+        limit_auto_multi_buffer_buffer="only-cube",
         hfusion_enable_multiple_consumer_fusion=True,
         intra_cache_num=3,
         inter_cache_num=2,
         enable_buffer_insert_optimization=True,
         enable_ub_refine_opt = True,
+        enable_dynamic_cv_pipeline=False,
+        enable_preload=True,
     )
     if output_f32:
         return o, softmax_lse, o_f32
@@ -2481,6 +2486,8 @@ def swa_bwd_impl(
         unit_flag=unit_flag,
         limit_auto_multi_buffer_of_local_buffer="no-l0c",
         intra_cache_num=1,
+        enable_dynamic_cv_pipeline=False,
+        enable_preload=True,
     )
     _swa_bwd_dq_kernel[grid](
         dq,
@@ -2530,6 +2537,8 @@ def swa_bwd_impl(
         limit_auto_multi_buffer_of_local_buffer="no-l0c",
         intra_cache_num=3,
         inter_cache_num=2,
+        enable_dynamic_cv_pipeline=False,
+        enable_preload=True,
     )
 
     return dq, dk, dv

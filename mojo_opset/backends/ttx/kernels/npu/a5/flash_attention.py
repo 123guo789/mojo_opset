@@ -683,6 +683,8 @@ def paged_attention_prefill_impl(
             inter_cache_num=2,
             enable_buffer_insert_optimization=True,
             enable_ub_refine_opt=True,
+            enable_preload=True,
+            enable_dynamic_cv_pipeline=False,
         )
     else:
         PAGE_AGGREGATION_NUM = 128 // page_size
@@ -729,10 +731,11 @@ def paged_attention_prefill_impl(
             BLOCK_SIZE_N=BLOCK_SIZE_N,
             BLOCK_SIZE_D=head_dim,
             PAGE_AGGREGATION_NUM=PAGE_AGGREGATION_NUM,
-            enable_dynamic_cv_pipeline=True,
+            enable_dynamic_cv_pipeline=False,
             enable_cube_block_merge=True,
             enable_buffer_insert_optimization=True,
             enable_ub_refine_opt=True,
+            enable_preload=True,
         )
 
     return o
@@ -1265,6 +1268,8 @@ def paged_attention_decode_impl(
             PAGE_SIZE=page_size,
             BLOCK_SIZE_D=BLOCK_SIZE_D,
             BLOCK_SIZE_N=BLOCK_SIZE_N,
+            enable_preload=True,
+            enable_dynamic_cv_pipeline=False,
         )
 
         # Phase 2 – Vector cores: online-softmax merge across splits
@@ -1280,6 +1285,8 @@ def paged_attention_decode_impl(
             GQA_INTERLEAVE=gqa_interleave,
             HEAD_DIM=head_dim,
             BLOCK_SIZE_D=BLOCK_SIZE_D,
+            enable_preload=True,
+            enable_dynamic_cv_pipeline=False,
         )
         return o
 
@@ -1320,5 +1327,7 @@ def paged_attention_decode_impl(
         page_size,
         BLOCK_SIZE_D=BLOCK_SIZE_D,
         BLOCK_SIZE_N=BLOCK_SIZE_N,
+        enable_preload=True,
+        enable_dynamic_cv_pipeline=False,
     )
     return o

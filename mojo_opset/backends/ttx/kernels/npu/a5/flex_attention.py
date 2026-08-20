@@ -1553,6 +1553,8 @@ def flex_attention_fwd_impl(
         enable_cross_if_fusion=True,
         enable_buffer_insert_optimization=True,
         enable_ub_refine_opt = True,
+        enable_preload=True,
+        enable_dynamic_cv_pipeline=False,
     )
 
     return output, lse
@@ -1875,6 +1877,8 @@ def flex_attention_bwd_impl(
         limit_auto_multi_buffer_of_local_buffer="no-l0c",
         intra_cache_num=3,
         inter_cache_num=2,
+        enable_preload=True,
+        enable_dynamic_cv_pipeline=False,
     )
 
     BLOCK_M_DKDV = TILE_BLOCK_SIZE
@@ -1984,6 +1988,8 @@ def flex_attention_bwd_impl(
             limit_auto_multi_buffer_of_local_buffer="no-l0c",
             intra_cache_num=2,
             inter_cache_num=1,
+            enable_preload=True,
+            enable_dynamic_cv_pipeline=False,
         )
 
     else:
@@ -2082,6 +2088,8 @@ def flex_attention_bwd_impl(
             limit_auto_multi_buffer_of_local_buffer="no-l0c",
             intra_cache_num=2,
             inter_cache_num=1,
+            enable_preload=True,
+            enable_dynamic_cv_pipeline=False,
         )
 
         # ---- Step 3: launch reduce kernel (仅当存在 split base) ----
